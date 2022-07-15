@@ -9,24 +9,29 @@
  */
 
 import React, {useEffect, useState, type PropsWithChildren} from 'react';
-import {
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {WEATHER_API, API_KEY} from '@env';
 
 const App = () => {
   const [search, setSearch] = useState<string>('');
   const [weather, setWeather] = useState<any[]>([]);
 
-  const onSearch = (val: string) => {
-    setSearch(val);
+  const onSearch = async (val: string) => {
+    const weather = await getWeather(val);
+    setWeather(weather);
   };
 
-  useEffect(() => {}, [weather]);
+  const getWeather = async (city: string) => {
+    const url = `${WEATHER_API}${API_KEY}/q=${city}`;
+    const result = await fetch(url);
+    const data = result.json();
+    return data;
+  };
+
+  useEffect(() => {
+    console.log(WEATHER_API);
+  }, [weather]);
+
   return (
     <SafeAreaView>
       <View style={styles.header}>
