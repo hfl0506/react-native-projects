@@ -9,28 +9,45 @@
  */
 
 import React, {useEffect, useState, type PropsWithChildren} from 'react';
-import {SafeAreaView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {
+  Button,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import {WEATHER_API, API_KEY} from '@env';
+import {Weather} from './src/types';
+import useDebounce from './src/hooks/useDebounce';
 
 const App = () => {
-  const [search, setSearch] = useState<string>('');
-  const [weather, setWeather] = useState<any[]>([]);
+  const [search, setSearch] = useState<string>();
+  const [weather, setWeather] = useState<Weather>();
+  const debouncedSearchTerm = useDebounce(search, 500);
 
   const onSearch = async (val: string) => {
-    const weather = await getWeather(val);
-    setWeather(weather);
+    const result = await findCityWeather(val);
+    if (result !== undefined) {
+      setWeather(result);
+    }
   };
 
-  const getWeather = async (city: string) => {
-    const url = `${WEATHER_API}${API_KEY}/q=${city}`;
-    const result = await fetch(url);
-    const data = result.json();
-    return data;
+  const findCityWeather = async (city: string) => {
+    try {
+      const resp = await fetch(`${WEATHER_API}${API_KEY}&q=${city}&aqi=no`);
+      const json: Weather = await resp.json();
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
-    console.log(WEATHER_API);
-  }, [weather]);
+    if (debouncedSearchTerm) {
+      onSearch(debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm]);
 
   return (
     <SafeAreaView>
@@ -39,13 +56,21 @@ const App = () => {
       </View>
       <TextInput
         style={styles.input}
-        onChangeText={newText => onSearch(newText)}
+        onChangeText={newText => setSearch(newText)}
         value={search}
         placeholder="search your city"
       />
       <Text>{search}</Text>
-      {weather?.length > 0 ? (
-        <View></View>
+      {weather !== undefined ? (
+        <View>
+          <Text>City Name: {weather?.location?.name}</Text>
+          <Text>Region: {weather?.location?.region}</Text>
+          <Text>Local Time: {weather?.location?.localtime}</Text>
+          <Text>Temperture: {weather?.current?.temp_c}</Text>
+          <Text>Temperture: {weather?.current?.temp_f}</Text>
+          <Text>Humidity: {weather?.current?.humidity}</Text>
+          <Text>Last Updated Time: {weather?.current?.last_updated}</Text>
+        </View>
       ) : (
         <View style={styles.empty}>
           <Text style={styles.emptyText}>...Nothing to Show</Text>
