@@ -60,16 +60,29 @@ const App = () => {
         value={search}
         placeholder="search your city"
       />
-      <Text>{search}</Text>
       {weather !== undefined ? (
-        <View>
-          <Text>City Name: {weather?.location?.name}</Text>
-          <Text>Region: {weather?.location?.region}</Text>
-          <Text>Local Time: {weather?.location?.localtime}</Text>
-          <Text>Temperture: {weather?.current?.temp_c}</Text>
-          <Text>Temperture: {weather?.current?.temp_f}</Text>
-          <Text>Humidity: {weather?.current?.humidity}</Text>
-          <Text>Last Updated Time: {weather?.current?.last_updated}</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardRow}>
+            City Name: {weather?.location?.name}
+          </Text>
+          <Text style={styles.cardRow}>
+            Region: {weather?.location?.region}
+          </Text>
+          <Text style={styles.cardRow}>
+            Local Time: {weather?.location?.localtime}
+          </Text>
+          <Text style={styles.cardRow}>
+            Celsius: {weather?.current?.temp_c}
+          </Text>
+          <Text style={styles.cardRow}>
+            Fahrenheit: {weather?.current?.temp_f}
+          </Text>
+          <Text style={styles.cardRow}>
+            Humidity: {weather?.current?.humidity}
+          </Text>
+          <Text style={styles.cardRow}>
+            Last Updated Time: {weather?.current?.last_updated}
+          </Text>
         </View>
       ) : (
         <View style={styles.empty}>
@@ -109,6 +122,21 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: '500',
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    margin: 10,
+    shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+  },
+  cardRow: {
+    paddingTop: 5,
+    letterSpacing: 2,
   },
 });
 
